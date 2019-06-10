@@ -136,6 +136,9 @@ module BounceEmail
 
       # Vacation messages, from full email text
       return '99' if email.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+
+      # Feedback-Type: abuse
+      return '96' if email.match(/Feedback-Type\: abuse/i)
     end
 
     def get_reason_from_status_code(code)
@@ -191,6 +194,7 @@ module BounceEmail
         '76' =>  "A transport system otherwise authorized to validate or decrypt a message was unable to do so because the necessary algorithm was not supported. ",
         '77' =>  "A transport system otherwise authorized to validate a message was unable to do so because the message was corrupted or altered.  This may be useful as a permanent, transient persistent, or successful delivery code.",
         #custom codes,
+        '96' =>  "Feedback Loop",
         '97' =>  "Delayed",
         '98' =>  "Not allowed Attachment",
         '99' =>  "Vacation auto-reply",
