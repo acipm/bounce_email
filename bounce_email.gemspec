@@ -5,11 +5,11 @@ Gem::Specification.new do |s|
   s.name          = %q{bounce_email}
   s.version       = File.read("VERSION").to_s
   s.platform      = Gem::Platform::RUBY
-  s.authors       = ["Tobias Bielohlawek", "Agris Ameriks", "Pedro Visintin", "Dimitar Dimitrov"]
-  s.email         = %q{tobi@rngtng.com}
-  s.homepage      = %q{http://github.com/mitio/bounce_email}
+  s.authors       = ["Tobias Bielohlawek", "Agris Ameriks", "Pedro Visintin", "Dimitar Dimitrov", "Rodrigo de Avila"]
+  s.email         = %q{rodrigo.avila@mailtop.com.br}
+  s.homepage      = %q{http://github.com/mailtop/bounce_email}
   s.summary       = %q{Detect kind of bounced email}
-  s.description   = %q{fork of whatcould/bounce-email incl. patches from wakiki, peterpunk, agowan & rngtng}
+  s.description   = %q{fork of livebg/bounce_email incl. patches from rdeavila}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

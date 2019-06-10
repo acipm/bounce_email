@@ -117,7 +117,7 @@ module BounceEmail
       return "5.1.0" if email.match(/Address rejected/)
       return "4.1.2" if email.match(/I couldn't find any host by that name/)
       return "4.2.0" if email.match(/not yet been delivered/i)
-      return "5.2.0" if email.match(/mailbox unavailable|No such mailbox/i)
+      return "5.1.1" if email.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup/i)
       return "5.4.4" if email.match(/Unrouteable address/i)
       return "4.4.7" if email.match(/retry timeout exceeded/i)
       return "5.2.0" if email.match(/The account or domain may not exist, they may be blacklisted, or missing the proper dns entries./i)
