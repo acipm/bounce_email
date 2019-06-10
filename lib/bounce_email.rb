@@ -133,6 +133,9 @@ module BounceEmail
       return "4.3.2" if email.match(/Technical details of temporary failure/i) && (email.match(/The recipient server did not accept our requests to connect/i) || email.match(/Connection was dropped by remote host/i) || email.match(/Could not initiate SMTP conversation/i)) # AA added
       return "5.0.0" if email.match(/Delivery to the following recipient failed permanently/i) # AA added
       return '5.2.3' if email.match(/account closed|account has been disabled or discontinued|mailbox not found|prohibited by administrator|access denied|account does not exist/i)
+
+      # Vacation messages, from full email text
+      return '99' if email.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
     end
 
     def get_reason_from_status_code(code)
