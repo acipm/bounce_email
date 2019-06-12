@@ -37,7 +37,7 @@ module BounceEmail
     end
 
     def bounced?
-      @bounced ||= check_if_bounce(@mail) || (diagnostic_code != "unknown") || (error_status != "unknown")
+      @bounced ||= check_if_bounce(@mail) || check_if_bounce_from_string(@mail.to_s) || (diagnostic_code != "unknown") || (error_status != "unknown")
     end
 
     def diagnostic_code
@@ -138,7 +138,7 @@ module BounceEmail
       return '99' if email.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
 
       # Feedback-Type: abuse
-      return '96' if email.match(/Feedback-Type\: abuse/i)
+      return '96' if email.match(/Feedback-Type\: abuse|complaint about message from/i)
     end
 
     def get_reason_from_status_code(code)
@@ -222,6 +222,15 @@ module BounceEmail
       return true if mail.subject.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
       return true if mail['precedence'].to_s.match(/auto.*(reply|responder|antwort)/i)
       return true if mail.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
+      false
+    end
+
+    def check_if_bounce_from_string(mail)
+      return true if mail.to_s.match(/(returned|undelivered) mail|mail delivery( failed)?|(delivery )(status notification|failure)|failure notice|undeliver(able|ed)( mail)?|return(ing message|ed) to sender/i)
+      return true if mail.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+      return true if mail.to_s.match(/auto.*(reply|responder|antwort)/i)
+      return true if mail.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
+      return true if mail.to_s.match(/complaint about message from/i)
       false
     end
 
