@@ -41,7 +41,7 @@ module BounceEmail
     end
 
     def diagnostic_code
-      @diagnostic_code ||= get_reason_from_status_code(code)
+      @diagnostic_code ||= Mail.get_reason_from_status_code(code)
     end
 
     def error_status
@@ -116,32 +116,7 @@ module BounceEmail
       return '96' if email.match(/Feedback-Type\: abuse/i)
     end
 
-    private
-
-    def get_code(mail)
-      unicode_subject = mail.subject.to_s
-      unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
-
-      return '97' if unicode_subject.match(/delayed/i)
-      return '98' if unicode_subject.match(/(unzulässiger|unerlaubter) anhang/i)
-      return '99' if unicode_subject.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
-
-      if mail.parts[1]
-        match_parts = mail.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
-        code = match_parts[2] if match_parts
-        return code if code
-      end
-
-      # Now try getting it from correct part of tmail
-      code = Mail.get_status_from_text(mail.body)
-      return code if code
-
-      # OK getting desperate so try getting code from entire email
-      code = Mail.get_status_from_text(mail.to_s)
-      code || 'unknown'
-    end
-
-    def get_reason_from_status_code(code)
+    def self.get_reason_from_status_code(code)
       return 'unknown' if code.nil? or code == 'unknown'
       reasons = {
         '00' =>  "Other undefined status is the only undefined error code. It should be used for all errors for which only the class of the error is known.",
@@ -202,6 +177,31 @@ module BounceEmail
 
       code = code.gsub(/\./,'')[1..2]
       reasons[code] || 'unknown'
+    end
+
+    private
+
+    def get_code(mail)
+      unicode_subject = mail.subject.to_s
+      unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
+
+      return '97' if unicode_subject.match(/delayed/i)
+      return '98' if unicode_subject.match(/(unzulässiger|unerlaubter) anhang/i)
+      return '99' if unicode_subject.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+
+      if mail.parts[1]
+        match_parts = mail.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
+        code = match_parts[2] if match_parts
+        return code if code
+      end
+
+      # Now try getting it from correct part of tmail
+      code = Mail.get_status_from_text(mail.body)
+      return code if code
+
+      # OK getting desperate so try getting code from entire email
+      code = Mail.get_status_from_text(mail.to_s)
+      code || 'unknown'
     end
 
     def get_type_from_status_code(code)
