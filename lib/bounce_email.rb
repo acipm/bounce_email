@@ -76,39 +76,14 @@ module BounceEmail
       @mail.send(m, *args, &block)
     end
 
-    private
-
-    def get_code(mail)
-      unicode_subject = mail.subject.to_s
-      unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
-
-      return '97' if unicode_subject.match(/delayed/i)
-      return '98' if unicode_subject.match(/(unzulässiger|unerlaubter) anhang/i)
-      return '99' if unicode_subject.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
-
-      if mail.parts[1]
-        match_parts = mail.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
-        code = match_parts[2] if match_parts
-        return code if code
-      end
-
-      # Now try getting it from correct part of tmail
-      code = get_status_from_text(mail.body)
-      return code if code
-
-      # OK getting desperate so try getting code from entire email
-      code = get_status_from_text(mail.to_s)
-      code || 'unknown'
-    end
-
-    def get_status_from_text(email)
+    def self.get_status_from_text(email)
       #=begin
       # This function is taken from PHP Bounce Handler class (http://www.phpclasses.org/browse/package/2691.html)
       # Author: Chris Fortune
       # Big thanks goes to him
       # I transled them to Ruby and added some my parts
       #=end
-      return "5.1.1" if email.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden/i)
+      return "5.1.1" if email.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
       return "5.1.2" if email.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
       if email.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size/i) # AA added 4th or
         return "5.2.2" if email.match(/This is a permanent error/i) # AA added this
@@ -139,6 +114,31 @@ module BounceEmail
 
       # Feedback-Type: abuse
       return '96' if email.match(/Feedback-Type\: abuse/i)
+    end
+
+    private
+
+    def get_code(mail)
+      unicode_subject = mail.subject.to_s
+      unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
+
+      return '97' if unicode_subject.match(/delayed/i)
+      return '98' if unicode_subject.match(/(unzulässiger|unerlaubter) anhang/i)
+      return '99' if unicode_subject.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+
+      if mail.parts[1]
+        match_parts = mail.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
+        code = match_parts[2] if match_parts
+        return code if code
+      end
+
+      # Now try getting it from correct part of tmail
+      code = Mail.get_status_from_text(mail.body)
+      return code if code
+
+      # OK getting desperate so try getting code from entire email
+      code = Mail.get_status_from_text(mail.to_s)
+      code || 'unknown'
     end
 
     def get_reason_from_status_code(code)
