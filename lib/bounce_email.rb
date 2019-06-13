@@ -83,17 +83,19 @@ module BounceEmail
       # Big thanks goes to him
       # I transled them to Ruby and added some my parts
       #=end
-      return "5.0.0" if email.match(/Action: failed.*Status: 5\.0\.0/i)
+      return "5.0.0" if email.match(/Status: 5\.0\.0/i)
       return "5.1.1" if email.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
       return "5.1.2" if email.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
       if email.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size/i) # AA added 4th or
-        return "5.2.2" if email.match(/This is a permanent error/i) # AA added this
+        return "5.2.2" if email.match(/This is a permanent error||(Status: |)5\.2\.2/i)
         return "4.2.2"
       end
       return "5.1.0" if email.match(/Address rejected/)
       return "4.1.2" if email.match(/I couldn't find any host by that name/)
       return "4.2.0" if email.match(/not yet been delivered/i)
       return "5.1.1" if email.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup/i)
+      return "5.2.3" if email.match(/Status: 5\.2\.3/i) # Too messages in folder
+      return "5.4.0" if email.match(/Status: 5\.4\.0/i) # too many hops
       return "5.4.4" if email.match(/Unrouteable address/i)
       return "4.4.7" if email.match(/retry timeout exceeded/i)
       return "5.2.0" if email.match(/The account or domain may not exist, they may be blacklisted, or missing the proper dns entries./i)
@@ -105,6 +107,7 @@ module BounceEmail
       return "5.5.4" if email.match(/554 delivery error:/i)
       return "5.1.1" if email.match(/550-5.1.1|This Gmail user does not exist/i)
       return "5.7.1" if email.match(/5.7.1 Your message.*?was blocked by ROTA DNSBL/i) # AA added
+      return "5.7.2" if email.match(/not have permission to post messages to the group/i)
       return "5.3.2" if email.match(/Technical details of permanent failure|Too many bad recipients/i)  && (email.match(/The recipient server did not accept our requests to connect/i) || email.match(/Connection was dropped by remote host/i) || email.match(/Could not initiate SMTP conversation/i)) # AA added
       return "4.3.2" if email.match(/Technical details of temporary failure/i) && (email.match(/The recipient server did not accept our requests to connect/i) || email.match(/Connection was dropped by remote host/i) || email.match(/Could not initiate SMTP conversation/i)) # AA added
       return "5.0.0" if email.match(/Delivery to the following recipient failed permanently/i) # AA added
