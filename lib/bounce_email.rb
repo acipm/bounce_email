@@ -86,14 +86,14 @@ module BounceEmail
       return "5.0.0" if email.match(/Status: 5\.0\.0/i)
       return "5.1.1" if email.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
       return "5.1.2" if email.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
-      if email.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size/i) # AA added 4th or
+      if email.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size|excedeu a quota/i)
         return "5.2.2" if email.match(/This is a permanent error||(Status: |)5\.2\.2/i)
         return "4.2.2"
       end
       return "5.1.0" if email.match(/Address rejected/)
       return "4.1.2" if email.match(/I couldn't find any host by that name/)
       return "4.2.0" if email.match(/not yet been delivered/i)
-      return "5.1.1" if email.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup/i)
+      return "5.1.1" if email.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup|Status: 5\.1\.1/i)
       return "5.2.3" if email.match(/Status: 5\.2\.3/i) # Too messages in folder
       return "5.4.0" if email.match(/Status: 5\.4\.0/i) # too many hops
       return "5.4.4" if email.match(/Unrouteable address/i)
